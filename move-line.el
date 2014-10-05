@@ -4,7 +4,7 @@
 
 ;; Author: Nathaniel Flath <flat0103@gmail.com>
 ;; URL: http://github.com/nflath/move-line
-;; Version: 0.0.1
+;; Version: 0.0.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -42,16 +42,20 @@
   "Move the current line up or down by N lines."
   (interactive "p")
   (let ((col (current-column))
+        (insert-newline nil)
         start
         end)
     (beginning-of-line)
     (setq start (point))
     (end-of-line)
-    (forward-char)
+    (if (= (point) (point-max))
+        (setq insert-newline t)
+      (forward-char))
     (setq end (point))
     (let ((line-text (delete-and-extract-region start end)))
       (forward-line n)
       (insert line-text)
+      (if (and insert-newline (not (= (point) (point-max)))) (insert "\n"))
       ;; restore point to original column in moved line
       (forward-line -1)
       (forward-char col))))
